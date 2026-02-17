@@ -1,41 +1,55 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+);
+
+// Helper: safe JSON
+function safeJson(x) {
+  try { return JSON.stringify(x); } catch { return String(x); }
+}
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(200).send("OK")
-  }
+  // Telegram only needs a 200 response. Always return 200.
+  try {
+    const update = req.body || {};
 
-  const update = req.body
-
-  if (!update.message) {
-    return res.status(200).send("No message")
-  }
-
-  const telegram_id = update.message.from.id
-  const username = update.message.from.username || null
-  const text = update.message.text || ""
-
-  // Check if user exists
-  const { data: existingUser } = await supabase
-    .from('users')
-    .select('*')
-    .eq('telegram_id', telegram_id)
-    .single()
-
-  if (!existingUser) {
-    await supabase.from('users').insert([
+    // OPTIONAL: store raw update for debugging (creates visibility)
+    // If you don't want logs, you can remove this whole block.
+    await supabase.from("webhook_logs").insert([
       {
-        telegram_id,
-        username,
-        balance: 0
-      }
-    ])
-  }
+        raw: safeJson(update),
+        created_at: new Date().toISOString(),
+      },
+    ]).catch(() => {});
 
-  return res.status(200).send("OK")
+    // Try to extract user info (works for /start, messages, etc.)
+    const msg = update.message || update.edited_message || update.callback_query?.message;
+    const from = msg?.from || update.callback_query?.from;
+
+    const telegram_id = from?.id;
+    const username = from?.username || null;
+
+    // If we got a telegram_id, ensure user exists
+    if (telegram_id) {
+      const { data: existing } = await supabase
+        .from("users")
+        .select("id, telegram_id")
+        .eq("telegram_id", telegram_id)
+        .maybeSingle();
+
+      if (!existing) {
+        await supabase.from("users").insert([
+          { telegram_id, username, balance: 0 }
+        ]);
+      }
+    }
+
+    // Always OK
+    return res.status(200).send("OK");
+  } catch (e) {
+    // Even on error, return 200 so Telegram stops failing
+    return res.status(200).send("OK");
+  }
 }
