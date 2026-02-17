@@ -13,6 +13,7 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
   try {
+    console.log("Webhook hit", req.body);
     if (req.method !== "POST") {
       return res.status(200).send("OK");
     }
