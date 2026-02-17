@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -8,14 +7,18 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
+    return res.status(200).send("OK")
   }
 
-  const { telegram_id, username } = req.body
+  const update = req.body
 
-  if (!telegram_id) {
-    return res.status(400).json({ error: 'Missing telegram_id' })
+  if (!update.message) {
+    return res.status(200).send("No message")
   }
+
+  const telegram_id = update.message.from.id
+  const username = update.message.from.username || null
+  const text = update.message.text || ""
 
   // Check if user exists
   const { data: existingUser } = await supabase
@@ -28,20 +31,11 @@ export default async function handler(req, res) {
     await supabase.from('users').insert([
       {
         telegram_id,
-        username: username || null,
+        username,
         balance: 0
       }
     ])
   }
 
-  const { data: user } = await supabase
-    .from('users')
-    .select('balance')
-    .eq('telegram_id', telegram_id)
-    .single()
-
-  return res.status(200).json({
-    message: 'User synced',
-    balance: user.balance
-  })
+  return res.status(200).send("OK")
 }
