@@ -1,57 +1,45 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const config = {
-  api: {
-    bodyParser: true,
-  },
-};
-
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export default async function handler(req, res) {
+  console.log("Webhook hit");
+
   try {
-    console.log("Webhook hit", req.body);
-    if (req.method !== "POST") {
+    const update = req.body;
+
+    console.log("Body:", JSON.stringify(update));
+
+    if (!update.message) {
       return res.status(200).send("OK");
     }
 
-    const update = req.body;
+    const telegram_id = update.message.from.id;
+    const username = update.message.from.username || null;
 
-    if (!update) {
-      return res.status(200).send("No body");
-    }
+    console.log("User:", telegram_id);
 
-    const message = update.message;
-    if (!message) {
-      return res.status(200).send("No message");
-    }
+    const { error } = await supabase.from("users").insert([
+      {
+        telegram_id: telegram_id,
+        username: username,
+        balance: 0
+      }
+    ]);
 
-    const telegram_id = message.from.id;
-    const username = message.from.username || null;
-
-    // Check if user exists
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("*")
-      .eq("telegram_id", telegram_id)
-      .maybeSingle();
-
-    if (!existingUser) {
-      await supabase.from("users").insert([
-        {
-          telegram_id,
-          username,
-          balance: 0,
-        },
-      ]);
+    if (error) {
+      console.error("Supabase error:", error);
+    } else {
+      console.log("Inserted successfully");
     }
 
     return res.status(200).send("OK");
+
   } catch (err) {
-    console.error(err);
-    return res.status(200).send("Error handled");
+    console.error("Server error:", err);
+    return res.status(200).send("OK");
   }
 }
