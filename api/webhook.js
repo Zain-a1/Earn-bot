@@ -6,49 +6,63 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  console.log("Webhook hit");
+  if (req.method !== "POST") {
+    return res.status(200).json({ ok: true });
+  }
 
   try {
-    const update = req.body;
+    const body = req.body;
 
-    console.log("Body:", JSON.stringify(update));
-
-    if (!update.message) {
-      return res.status(200).send("OK");
+    if (!body.message) {
+      return res.status(200).json({ ok: true });
     }
 
-    const telegram_id = update.message.from.id;
-    const username = update.message.from.username || null;
+    const telegram_id = body.message.from.id;
+    const username = body.message.from.username || null;
+    const first_name = body.message.from.first_name || null;
+    const last_name = body.message.from.last_name || null;
 
-    console.log("User:", telegram_id);
-await supabase
-  .from("users")
-  .upsert(
-    [{
-      telegram_id: String(telegram_id),
-      username: username,
-      balance: 0
-    }],
-    { onConflict: "telegram_id" }
-  );
-    const { error } = await supabase.from("users").insert([
-      {
-        telegram_id: telegram_id,
-        username: username,
-        balance: 0
-      }
-    ]);
+    // ✅ SAFE UPSERT (NO DUPLICATE CRASH)
+    const { error } = await supabase
+      .from("users")
+      .upsert(
+        [
+          {
+            telegram_id: String(telegram_id),
+            username: username,
+            first_name: first_name,
+            last_name: last_name,
+            balance: 0
+          }
+        ],
+        {
+          onConflict: "telegram_id"
+        }
+      );
 
     if (error) {
       console.error("Supabase error:", error);
-    } else {
-      console.log("Inserted successfully");
+      return res.status(500).json({ error: error.message });
     }
 
-    return res.status(200).send("OK");
+    // ✅ Reply to user
+    const BOT_TOKEN = process.env.BOT_TOKEN;
+
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chat_id: telegram_id,
+        text: "✅ You are registered.\n\nUse /balance to check your balance."
+      })
+    });
+
+    return res.status(200).json({ ok: true });
 
   } catch (err) {
     console.error("Server error:", err);
-    return res.status(200).send("OK");
+    return res.status(500).json({ error: "Server error" });
   }
 }
