@@ -1,68 +1,96 @@
-import { createClient } from "@supabase/supabase-js";
+// api/webhook.js
+const { createClient } = require("@supabase/supabase-js");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(200).json({ ok: true });
+async function tgSend(chat_id, text) {
+  const token = process.env.BOT_TOKEN;
+  if (!token) {
+    console.error("BOT_TOKEN missing. Bot cannot reply.");
+    return;
   }
 
+  const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id, text }),
+  });
+
+  const data = await r.json().catch(() => ({}));
+  if (!data.ok) {
+    console.error("Telegram sendMessage failed:", data);
+  }
+}
+
+module.exports = async function handler(req, res) {
+  // Telegram wants 200 quickly. Always respond 200 (log errors instead).
+  if (req.method !== "POST") return res.status(200).send("ok");
+
   try {
-    const body = req.body;
+    const update = req.body || {};
+    const msg = update.message;
 
-    if (!body.message) {
-      return res.status(200).json({ ok: true });
-    }
+    if (!msg || !msg.from) return res.status(200).json({ ok: true });
 
-    const telegram_id = body.message.from.id;
-    const username = body.message.from.username || null;
-    const first_name = body.message.from.first_name || null;
-    const last_name = body.message.from.last_name || null;
+    const telegram_id = String(msg.from.id);
+    const username = msg.from.username || null;
+    const first_name = msg.from.first_name || null;
+    const last_name = msg.from.last_name || null;
+    const text = (msg.text || "").trim();
 
-    // ✅ SAFE UPSERT (NO DUPLICATE CRASH)
-    const { error } = await supabase
+    console.log("Webhook hit:", { telegram_id, username, text });
+
+    // ✅ ONLY UPSERT (NO INSERT ANYWHERE)
+    // IMPORTANT: onConflict must match your exact column name: telegram_id
+    const { error: upsertErr } = await supabase
       .from("users")
       .upsert(
         [
           {
-            telegram_id: String(telegram_id),
-            username: username,
-            first_name: first_name,
-            last_name: last_name,
-            balance: 0
-          }
+            telegram_id,
+            username,
+            first_name,
+            last_name,
+            // Don't force balance back to 0 every time:
+            // Only set balance=0 when creating the user (handled below optionally),
+          },
         ],
-        {
-          onConflict: "telegram_id"
-        }
+        { onConflict: "telegram_id" }
       );
 
-    if (error) {
-      console.error("Supabase error:", error);
-      return res.status(500).json({ error: error.message });
+    if (upsertErr) {
+      console.error("Supabase upsert error:", upsertErr);
+      // still return 200 to stop Telegram retry-loop
+      return res.status(200).json({ ok: true });
     }
 
-    // ✅ Reply to user
-    const BOT_TOKEN = process.env.BOT_TOKEN;
+    // If /start -> reply
+    if (text === "/start" || text.toLowerCase() === "start") {
+      await tgSend(msg.chat.id, "✅ Registered.\n\nUse /balance to check balance.");
+    } else if (text === "/balance") {
+      const { data, error } = await supabase
+        .from("users")
+        .select("balance")
+        .eq("telegram_id", telegram_id)
+        .single();
 
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        chat_id: telegram_id,
-        text: "✅ You are registered.\n\nUse /balance to check your balance."
-      })
-    });
+      if (error) {
+        console.error("Balance select error:", error);
+        await tgSend(msg.chat.id, "⚠️ Could not load balance yet.");
+      } else {
+        await tgSend(msg.chat.id, `💰 Balance: ${data.balance ?? 0}`);
+      }
+    } else {
+      // optional default
+      await tgSend(msg.chat.id, "Send /balance or /start.");
+    }
 
     return res.status(200).json({ ok: true });
-
-  } catch (err) {
-    console.error("Server error:", err);
-    return res.status(500).json({ error: "Server error" });
+  } catch (e) {
+    console.error("Webhook crash:", e);
+    return res.status(200).json({ ok: true });
   }
-}
+};
