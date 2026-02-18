@@ -21,7 +21,16 @@ export default async function handler(req, res) {
     const username = update.message.from.username || null;
 
     console.log("User:", telegram_id);
-
+await supabase
+  .from("users")
+  .upsert(
+    [{
+      telegram_id: String(telegram_id),
+      username: username,
+      balance: 0
+    }],
+    { onConflict: "telegram_id" }
+  );
     const { error } = await supabase.from("users").insert([
       {
         telegram_id: telegram_id,
