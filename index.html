@@ -1,12 +1,162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Earn Bot</title>
-  </head>
-  <body>
-    <h1>Earn Bot is live ✅</h1>
-    <p>Next: Telegram Mini App + Monetag rewarded ads.</p>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earn App</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0e1420;
+  color:white;
+}
+.header{
+  padding:15px;
+  text-align:center;
+  background:#121a2b;
+  font-weight:bold;
+  font-size:18px;
+}
+.nav{
+  display:flex;
+  justify-content:space-around;
+  background:#182238;
+}
+.nav button{
+  flex:1;
+  padding:12px;
+  background:none;
+  border:none;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+.nav button:hover{
+  background:#223050;
+}
+.section{
+  display:none;
+  padding:20px;
+}
+.active{
+  display:block;
+}
+.card{
+  background:#16233d;
+  padding:20px;
+  border-radius:10px;
+  margin-top:15px;
+}
+input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:5px;
+  border:none;
+}
+button.primary{
+  margin-top:15px;
+  width:100%;
+  padding:12px;
+  background:#38d996;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+.message{
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Earn Platform</div>
+
+<div class="nav">
+  <button onclick="showSection('dashboard')">Dashboard</button>
+  <button onclick="showSection('earn')">Earn</button>
+  <button onclick="showSection('withdraw')">Withdraw</button>
+</div>
+
+<div id="dashboard" class="section active">
+  <div class="card">
+    <h3>Balance</h3>
+    <h1 id="balance">Loading...</h1>
+  </div>
+</div>
+
+<div id="earn" class="section">
+  <div class="card">
+    <h3>Earn Money</h3>
+    <p>Complete offers to earn rewards.</p>
+    <button class="primary" onclick="fakeOffer()">Complete Test Offer</button>
+    <div id="earnMessage" class="message"></div>
+  </div>
+</div>
+
+<div id="withdraw" class="section">
+  <div class="card">
+    <h3>Withdraw USDT (TRC20)</h3>
+    <input type="number" id="amount" placeholder="Enter amount">
+    <input type="text" id="wallet" placeholder="Enter TRC20 wallet address">
+    <button class="primary" onclick="requestWithdraw()">Request Withdrawal</button>
+    <div id="withdrawMessage" class="message"></div>
+  </div>
+</div>
+
+<script>
+const token = new URLSearchParams(window.location.search).get("t");
+
+function showSection(section){
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(section).classList.add('active');
+}
+
+async function loadBalance(){
+  if(!token){
+    document.getElementById("balance").innerText = "Invalid Access";
+    return;
+  }
+
+  const res = await fetch(`/api/me?t=${token}`);
+  const data = await res.json();
+
+  if(data.ok){
+    document.getElementById("balance").innerText = "$" + data.user.balance;
+  }else{
+    document.getElementById("balance").innerText = "Error";
+  }
+}
+
+async function requestWithdraw(){
+  const amount = document.getElementById("amount").value;
+  const wallet = document.getElementById("wallet").value;
+
+  const res = await fetch("/api/request-withdrawal",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({t:token, amount, wallet_address:wallet})
+  });
+
+  const data = await res.json();
+
+  if(data.ok){
+    document.getElementById("withdrawMessage").innerText = "Withdrawal requested.";
+  }else{
+    document.getElementById("withdrawMessage").innerText = data.error;
+  }
+}
+
+function fakeOffer(){
+  document.getElementById("earnMessage").innerText = 
+  "Offer system will be connected next.";
+}
+
+loadBalance();
+</script>
+
+</body>
 </html>
