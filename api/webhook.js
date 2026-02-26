@@ -10,10 +10,30 @@ const WEB_APP_URL = "https://earn-bot-eight.vercel.app"; // your app URL
 
 async function tgSendWebApp(chatId) {
   const token = process.env.BOT_TOKEN;
-  if (!token) {
-    console.error("BOT_TOKEN missing.");
-    return;
-  }
+  if (!token) return;
+
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: "🚀 Tap below to open the Earn App:",
+      reply_markup: {
+        keyboard: [
+          [
+            {
+              text: "🔥 Open Earn App",
+              web_app: {
+                url: "https://earn-bot-eight.vercel.app"
+              }
+            }
+          ]
+        ],
+        resize_keyboard: true
+      }
+    })
+  });
+}
 
   await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
