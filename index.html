@@ -182,17 +182,27 @@ async function loadUser(){
 
 async function claimDaily(){
   const telegram_id = $("tid").value.trim();
-  if(!telegram_id){ $("dailyMsg").textContent="Telegram ID missing."; return; }
-
-  $("dailyMsg").textContent="Processing...";
-  const data = await apiPost("/api/daily",{telegram_id});
-
-  if(!data.ok){
-    $("dailyMsg").textContent="❌ "+data.error;
+  if(!telegram_id){
+    $("dailyMsg").textContent = "Telegram ID missing.";
     return;
   }
 
-  $("dailyMsg").textContent="✅ +" + data.reward + " points added!";
+  $("dailyMsg").textContent = "Processing...";
+
+  const data = await apiPost("/api/daily", { telegram_id });
+
+  if(!data || data.ok === false){
+    $("dailyMsg").textContent = "❌ " + (data?.error || "Daily failed.");
+    return;
+  }
+
+  const reward = data.reward ?? data.points ?? 0;
+
+  $("dailyMsg").textContent =
+    reward > 0
+      ? `✅ +${reward} points added!`
+      : "✅ Daily claimed successfully!";
+
   loadUser();
 }
 
