@@ -1,5 +1,6 @@
 // api/balance.js (ESM)
 import { createClient } from "@supabase/supabase-js";
+import { requireTelegramWebApp } from "./_tg-auth.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -9,13 +10,14 @@ const supabase = createClient(
 export default async function handler(req, res) {
   try {
     if (req.method !== "GET") {
-      return res.status(405).json({ error: "Method not allowed" });
+      return res.status(405).json({ ok: false, error: "method_not_allowed" });
     }
 
-    const telegram_id = String(req.query.telegram_id || "").trim();
-    if (!telegram_id) {
-      return res.status(400).json({ error: "Missing telegram_id" });
-    }
+    // ✅ Only allow when opened inside Telegram WebApp (verified initData)
+    const tg = requireTelegramWebApp(req, res);
+    if (!tg) return;
+
+    const telegram_id = tg.telegram_id;
 
     // 1) Fetch user
     const { data: user, error: userErr } = await supabase
@@ -24,8 +26,8 @@ export default async function handler(req, res) {
       .eq("telegram_id", telegram_id)
       .single();
 
-    if (userErr) {
-      return res.status(404).json({ error: "User not found", details: userErr.message });
+    if (userErr || !user) {
+      return res.status(404).json({ ok: false, error: "user_not_found", details: userErr?.message });
     }
 
     // 2) Count pending withdrawals for this user
@@ -36,7 +38,6 @@ export default async function handler(req, res) {
       .eq("status", "pending");
 
     if (pendingErr) {
-      // still return user even if count fails
       return res.status(200).json({
         ok: true,
         user,
@@ -54,6 +55,6 @@ export default async function handler(req, res) {
     });
   } catch (e) {
     console.error("balance.js crash:", e);
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ ok: false, error: "server_error" });
   }
 }
