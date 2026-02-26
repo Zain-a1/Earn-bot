@@ -1,6 +1,7 @@
 // api/daily.js (ESM)
 
 import { createClient } from "@supabase/supabase-js";
+import { requireTelegramWebApp } from "./_tg-auth.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -12,14 +13,14 @@ const DAILY_REWARD = 1000; // points per day
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
-      return res.status(405).json({ ok: false, error: "Method not allowed" });
+      return res.status(405).json({ ok: false, error: "method_not_allowed" });
     }
 
-    const { telegram_id } = req.body || {};
+    // ✅ Only allow when opened inside Telegram WebApp (verified initData)
+    const tg = requireTelegramWebApp(req, res);
+    if (!tg) return;
 
-    if (!telegram_id) {
-      return res.status(400).json({ ok: false, error: "Missing telegram_id" });
-    }
+    const telegram_id = tg.telegram_id;
 
     // Get user
     const { data: user, error: userError } = await supabase
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
       .single();
 
     if (userError || !user) {
-      return res.status(404).json({ ok: false, error: "User not found" });
+      return res.status(404).json({ ok: false, error: "user_not_found" });
     }
 
     const now = new Date();
@@ -41,18 +42,20 @@ export default async function handler(req, res) {
       if (diffHours < 24) {
         return res.status(400).json({
           ok: false,
-          error: "Already claimed today",
-          hours_remaining: Number(24 - diffHours).toFixed(2)
+          error: "already_claimed",
+          hours_remaining: Number(24 - diffHours).toFixed(2),
         });
       }
     }
 
     // Update balance + claim time
+    const newBalance = Number(user.balance || 0) + DAILY_REWARD;
+
     const { error: updateError } = await supabase
       .from("users")
       .update({
-        balance: Number(user.balance || 0) + DAILY_REWARD,
-        last_daily_claim: now
+        balance: newBalance,
+        last_daily_claim: now,
       })
       .eq("telegram_id", telegram_id);
 
@@ -62,10 +65,11 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       ok: true,
-      reward: DAILY_REWARD
+      reward: DAILY_REWARD,
+      balance: newBalance,
     });
   } catch (err) {
     console.error("Daily bonus error:", err);
-    return res.status(500).json({ ok: false, error: "Server error" });
+    return res.status(500).json({ ok: false, error: "server_error" });
   }
 }
