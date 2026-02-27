@@ -11,22 +11,17 @@
       --good:#39d98a; --bad:#ff5c7a; --warn:#ffd166; --line:#223062;
       --btn:#4c6fff; --btn2:#2a345c;
     }
-
     *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
     body{margin:0;background:linear-gradient(180deg,#070b18, var(--bg));color:var(--text);}
-
     .wrap{max-width:920px;margin:0 auto;padding:18px;}
     .top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
     .brand{font-weight:800;letter-spacing:.3px;font-size:18px}
     .pill{padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
-
     .grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px;margin-top:14px}
     @media (max-width:900px){.grid{grid-template-columns:1fr}}
-
     .card{background:rgba(18,26,51,.85);border:1px solid var(--line);border-radius:14px;padding:14px}
     .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
     .h h2{margin:0;font-size:14px;color:var(--muted);font-weight:700}
-
     .big{font-size:34px;font-weight:900;letter-spacing:.2px}
     .row{display:flex;gap:10px;flex-wrap:wrap}
     input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0a1026;color:var(--text)}
@@ -34,26 +29,20 @@
     button.secondary{background:var(--btn2);border:1px solid var(--line)}
     button.green{background:var(--good);color:#000}
     button:disabled{opacity:.6;cursor:not-allowed}
-
     .msg{margin-top:10px;font-size:13px;color:var(--muted);white-space:pre-wrap}
-    .muted{color:var(--muted)}
-    .small{font-size:12px;color:var(--muted)}
-    .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media (max-width:600px){.split{grid-template-columns:1fr}}
-
     table{width:100%;border-collapse:collapse;font-size:13px}
     th,td{padding:10px;border-bottom:1px solid rgba(34,48,98,.6);text-align:left;vertical-align:top}
     th{color:var(--muted);font-weight:800;font-size:12px}
-
     .tag{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800}
     .pending{background:rgba(255,209,102,.15);color:var(--warn);border:1px solid rgba(255,209,102,.25)}
     .approved{background:rgba(57,217,138,.15);color:var(--good);border:1px solid rgba(57,217,138,.25)}
     .rejected{background:rgba(255,92,122,.15);color:var(--bad);border:1px solid rgba(255,92,122,.25)}
-
+    .muted{color:var(--muted)}
+    .small{font-size:12px;color:var(--muted)}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:600px){.split{grid-template-columns:1fr}}
     .banner{margin:15px 0;text-align:center}
     .hook{font-size:13px;color:var(--good);margin-top:6px}
-
-    /* Mobile-safe table scrolling + keep IDs on one line */
     .tableScroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid rgba(34,48,98,.45);border-radius:12px}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
     code.idcode{
@@ -66,65 +55,48 @@
       background:#0a1026;
       color:var(--text);
     }
-
-    /* Telegram-only gate */
-    .gate{
-      min-height:100vh;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
-    .gate .box{
-      max-width:520px;
-      width:100%;
-      background:rgba(18,26,51,.92);
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:16px;
-      text-align:center;
-    }
-    .gate h1{margin:0 0 8px 0;font-size:18px}
-    .gate p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
-    .gate .btns{margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-    .debug{margin-top:10px;font-size:12px;color:var(--muted);text-align:left;white-space:pre-wrap}
   </style>
 </head>
 
 <body>
-
-<!-- Telegram-only blocking screen -->
-<div class="gate" id="gate">
-  <div class="box">
-    <h1>Open from Telegram</h1>
-    <p>
-      This app only works inside Telegram WebApp for security.<br/>
-      Please open it from the bot button/menu in Telegram.
-    </p>
-    <div class="btns">
-      <button class="secondary" id="btnRetry">Retry</button>
-    </div>
-    <div class="debug" id="gateDebug"></div>
-  </div>
-</div>
-
-<!-- Main app -->
-<div class="wrap" id="app" style="display:none;">
+<div class="wrap">
 
   <div class="top">
     <div class="brand">Earn Bot</div>
     <div class="pill">Status: <span id="statusTxt">Idle</span></div>
   </div>
 
-  <!-- 🔥 TOP BANNER AD -->
+  <!-- TOP BANNER AD -->
   <div class="banner">
-    <!-- PASTE MONETAG TOP BANNER CODE HERE (728x90 or 320x100 mobile) -->
+    <!-- PASTE MONETAG TOP BANNER CODE HERE -->
   </div>
 
   <div class="grid">
 
-    <!-- MAIN BALANCE CARD -->
-    <div class="card">
+    <!-- LOGIN CARD -->
+    <div class="card" id="loginCard">
+      <div class="h">
+        <h2>Login</h2>
+        <span class="small">Use the code from Telegram bot</span>
+      </div>
+
+      <div class="small">Login Code</div>
+      <input id="code" placeholder="e.g. 6F8A2B" autocomplete="one-time-code" />
+
+      <div style="height:10px"></div>
+      <div class="row">
+        <button id="btnLogin" class="green">Login</button>
+        <button id="btnLogout" class="secondary">Clear Saved</button>
+      </div>
+
+      <div class="msg" id="loginMsg"></div>
+      <div class="small" style="margin-top:10px">
+        After login, your session is saved on this device.
+      </div>
+    </div>
+
+    <!-- MAIN APP CARD -->
+    <div class="card" id="appCard" style="display:none">
       <div class="h">
         <h2>Your Balance</h2>
         <span class="small" id="userLine">Loading…</span>
@@ -145,23 +117,19 @@
 
       <div class="split">
         <div>
-          <div class="small">Your Telegram ID</div>
-          <input id="tid" disabled />
-        </div>
-        <div>
           <div class="small">Withdraw amount (points)</div>
           <input id="amount" placeholder="e.g. 2000" inputmode="numeric" />
+        </div>
+        <div>
+          <div class="small">Action</div>
+          <button id="btnWithdraw">Request Withdrawal</button>
         </div>
       </div>
 
       <div style="height:10px"></div>
       <div class="row">
         <button id="btnLoad" class="secondary">Refresh Balance</button>
-        <button id="btnWithdraw">Request Withdrawal</button>
-      </div>
-
-      <div class="small" style="margin-top:10px">
-        Security: this app reads your Telegram ID automatically (no manual ID entry).
+        <button id="btnRefresh" class="secondary">Refresh History</button>
       </div>
     </div>
 
@@ -180,16 +148,15 @@
     <div class="card" style="grid-column:1/-1">
       <div class="h">
         <h2>Withdrawal History</h2>
-        <button id="btnRefresh" class="secondary">Refresh</button>
       </div>
-      <div id="tableWrap" class="muted">Loading…</div>
+      <div id="tableWrap" class="muted">Login to load data.</div>
     </div>
 
   </div>
 
-  <!-- 🔥 BOTTOM BANNER AD -->
+  <!-- BOTTOM BANNER AD -->
   <div class="banner">
-    <!-- PASTE MONETAG BOTTOM BANNER CODE HERE (300x250 recommended) -->
+    <!-- PASTE MONETAG BOTTOM BANNER CODE HERE -->
   </div>
 
 </div>
@@ -197,66 +164,27 @@
 <script>
   const $ = (id) => document.getElementById(id);
   const setStatus = (t) => $("statusTxt").textContent = t;
-  const msg = (t) => $("msg").textContent = t || "";
 
-  function tgEnv(){
-    try{
-      const tg = window.Telegram?.WebApp;
-      const initData = tg?.initData || "";
-      const uid = tg?.initDataUnsafe?.user?.id;
-      return { tg, initData, telegram_id: uid ? String(uid) : "" };
-    }catch(e){
-      return { tg:null, initData:"", telegram_id:"" };
-    }
+  function setLoginMsg(t, ok=false){
+    const el = $("loginMsg");
+    el.style.color = ok ? "#39d98a" : "#ff5c7a";
+    el.textContent = t || "";
+  }
+  function msg(t){ $("msg").textContent = t || ""; }
+
+  function getToken(){
+    return localStorage.getItem("SESSION_TOKEN") || "";
+  }
+  function setToken(t){
+    localStorage.setItem("SESSION_TOKEN", t);
+  }
+  function clearToken(){
+    localStorage.removeItem("SESSION_TOKEN");
   }
 
-  // ✅ More permissive + robust: accept either initData OR user id
-  function isInsideTelegramNow(){
-    const { tg, initData, telegram_id } = tgEnv();
-    return Boolean(tg && (initData || telegram_id));
-  }
-
-  // ✅ Wait for Telegram to finish injecting initDataUnsafe/user
-  async function waitForTelegramReady(maxMs = 2000){
-    const started = Date.now();
-    while(Date.now() - started < maxMs){
-      if(isInsideTelegramNow()){
-        return true;
-      }
-      await new Promise(r => setTimeout(r, 60));
-    }
-    return isInsideTelegramNow();
-  }
-
-  function formatTag(status){
-    const s = String(status || "pending").toLowerCase();
-    const cls = (s === "approved") ? "approved" : (s === "rejected") ? "rejected" : "pending";
-    return `<span class="tag ${cls}">${s}</span>`;
-  }
-
-  // ✅ ALWAYS attach Telegram initData header (server can verify later)
-  async function apiGet(path){
-    const { initData } = tgEnv();
-    const r = await fetch(path, {
-      method: "GET",
-      headers: initData ? { "x-telegram-initdata": initData } : {}
-    });
-    const j = await r.json().catch(()=> ({}));
-    return { ok: r.ok, ...j };
-  }
-
-  async function apiPost(path, body){
-    const { initData } = tgEnv();
-    const r = await fetch(path, {
-      method:"POST",
-      headers: {
-        "Content-Type":"application/json",
-        ...(initData ? { "x-telegram-initdata": initData } : {})
-      },
-      body: JSON.stringify(body || {})
-    });
-    const j = await r.json().catch(()=> ({}));
-    return { ok: r.ok && (j.ok !== false), ...j };
+  function showLoggedInUI(loggedIn){
+    $("loginCard").style.display = loggedIn ? "none" : "block";
+    $("appCard").style.display = loggedIn ? "block" : "none";
   }
 
   function hookText(points){
@@ -268,53 +196,92 @@
     return "💎 Elite streak — keep it up!";
   }
 
-  async function loadUser(){
-    const { telegram_id } = tgEnv();
-    if(!telegram_id){ msg("Telegram ID not detected yet. Tap Retry if needed."); return; }
+  async function apiGet(path){
+    const token = getToken();
+    const r = await fetch(path, {
+      method: "GET",
+      headers: token ? { "x-session-token": token } : {}
+    });
+    const j = await r.json().catch(()=> ({}));
+    return { http_ok: r.ok, ...j };
+  }
 
+  async function apiPost(path, body){
+    const token = getToken();
+    const r = await fetch(path, {
+      method:"POST",
+      headers: {
+        "Content-Type":"application/json",
+        ...(token ? { "x-session-token": token } : {})
+      },
+      body: JSON.stringify(body || {})
+    });
+    const j = await r.json().catch(()=> ({}));
+    return { http_ok: r.ok, ...j };
+  }
+
+  async function login(){
+    setLoginMsg("");
+    const code = $("code").value.trim();
+    if(!code) return setLoginMsg("Enter your login code.");
+
+    setStatus("Logging in...");
+    const data = await apiPost("/api/login", { code });
+
+    if(!data.http_ok || data.ok === false){
+      setStatus("Error");
+      return setLoginMsg("❌ " + (data.error || "Login failed"));
+    }
+
+    setToken(data.session_token);
+    $("code").value = "";
+    setStatus("Logged in");
+    setLoginMsg("✅ Logged in!", true);
+    showLoggedInUI(true);
+    await loadAll();
+  }
+
+  async function loadUser(){
     setStatus("Loading...");
     msg("");
 
-    const data = await apiGet(`/api/me?telegram_id=${encodeURIComponent(telegram_id)}`);
-    if(!data.ok){
-      setStatus("Error");
-      msg(data.error || "Error loading user");
+    const data = await apiGet("/api/me");
+    if(!data.http_ok || data.ok === false){
+      setStatus("Login required");
+      showLoggedInUI(false);
       return;
     }
 
-    const u = data.user || data.data || data;
+    const u = data.user;
     const points = Number(u.balance || 0);
-
-    $("tid").value = telegram_id;
     $("balance").textContent = points;
-    $("userLine").textContent = `@${u.username || "no-username"} • tg:${telegram_id}`;
+    $("userLine").textContent = `@${u.username || "no-username"} • tg:${u.telegram_id}`;
     $("hookLine").textContent = hookText(points);
 
     setStatus("Ready");
-    await loadWithdrawals();
+  }
+
+  function formatTag(status){
+    const s = String(status || "pending").toLowerCase();
+    const cls = (s === "approved") ? "approved" : (s === "rejected") ? "rejected" : "pending";
+    return `<span class="tag ${cls}">${s}</span>`;
   }
 
   async function loadWithdrawals(){
-    const { telegram_id } = tgEnv();
-    if(!telegram_id) return;
+    const data = await apiGet("/api/withdrawals");
 
-    setStatus("Loading withdrawals...");
-    const data = await apiGet(`/api/withdrawals?telegram_id=${encodeURIComponent(telegram_id)}`);
-
-    if(!data.ok){
-      setStatus("Error");
-      $("tableWrap").innerHTML = `<div class="muted">❌ Could not load withdrawals: ${data.error || "unknown"}</div>`;
+    if(!data.http_ok || data.ok === false){
+      $("tableWrap").innerHTML = `<div class="muted">Login to load withdrawals.</div>`;
       return;
     }
 
     const rows = data.withdrawals || [];
     if(!rows.length){
       $("tableWrap").innerHTML = `<div class="muted">No withdrawals yet.</div>`;
-      setStatus("Ready");
       return;
     }
 
-    const html = `
+    $("tableWrap").innerHTML = `
       <div class="tableScroll">
         <table>
           <thead>
@@ -340,43 +307,34 @@
         </table>
       </div>
     `;
-    $("tableWrap").innerHTML = html;
-    setStatus("Ready");
   }
 
   async function claimDaily(){
-    const { telegram_id } = tgEnv();
-    if(!telegram_id){
-      $("dailyMsg").textContent = "Telegram ID not detected. Tap Retry.";
-      return;
-    }
-
     $("dailyMsg").textContent = "Processing...";
-    const data = await apiPost("/api/daily", { telegram_id });
+    const data = await apiPost("/api/daily", {});
 
-    if(!data.ok){
+    if(!data.http_ok || data.ok === false){
       $("dailyMsg").textContent = "❌ " + (data.error || "Daily failed.");
       return;
     }
 
-    const reward = data.reward ?? 0;
-    $("dailyMsg").textContent = `✅ +${reward} points added!`;
-    await loadUser();
+    $("dailyMsg").textContent = `✅ +${data.reward ?? 0} points added!`;
+    await loadAll();
   }
 
   async function requestWithdraw(){
-    const { telegram_id } = tgEnv();
     const amount = Number(($("amount").value || "").trim());
-
-    if(!telegram_id){ msg("Telegram ID not detected. Tap Retry."); return; }
-    if(!Number.isFinite(amount) || amount <= 0){ msg("Enter a valid amount."); return; }
+    if(!Number.isFinite(amount) || amount <= 0){
+      msg("Enter a valid amount.");
+      return;
+    }
 
     setStatus("Creating withdrawal...");
     msg("");
 
-    const data = await apiPost("/api/withdraw", { telegram_id, amount });
+    const data = await apiPost("/api/withdraw", { amount });
 
-    if(!data.ok){
+    if(!data.http_ok || data.ok === false){
       setStatus("Error");
       msg(data.error || "Withdrawal failed");
       return;
@@ -384,324 +342,32 @@
 
     msg("✅ Withdrawal requested successfully.");
     $("amount").value = "";
+    await loadAll();
+  }
+
+  async function loadAll(){
     await loadUser();
-  }
-
-  function showGate(){
-    const { tg, initData, telegram_id } = tgEnv();
-    $("gate").style.display = "flex";
-    $("app").style.display = "none";
-    $("gateDebug").textContent =
-      "Debug:\n" +
-      `Telegram.WebApp present: ${Boolean(tg)}\n` +
-      `initData length: ${initData ? initData.length : 0}\n` +
-      `user id: ${telegram_id || "(none yet)"}\n\n` +
-      "If you opened from Telegram and this still shows, tap Retry once.";
-  }
-
-  function showApp(){
-    $("gate").style.display = "none";
-    $("app").style.display = "block";
-  }
-
-  async function boot(){
-    // wait briefly for Telegram injection
-    const ok = await waitForTelegramReady(2200);
-
-    if(!ok){
-      showGate();
-      return;
-    }
-
-    const { tg, telegram_id } = tgEnv();
-    try{ tg?.expand?.(); tg?.ready?.(); }catch(e){}
-
-    showApp();
-    $("tid").value = telegram_id || "";
-
-    $("btnLoad").onclick = loadUser;
-    $("btnWithdraw").onclick = requestWithdraw;
-    $("btnRefresh").onclick = loadWithdrawals;
-    $("btnDaily").onclick = claimDaily;
-
-    await loadUser();
-  }
-
-  $("btnRetry").onclick = () => boot();
-
-  // start
-  boot();
-</script>
-
-</body>
-</html>      <!-- DAILY BONUS -->
-      <div class="card" style="background:#0f1838;margin-bottom:12px">
-        <div class="h"><h2>Daily Bonus</h2></div>
-        <button class="green" id="btnDaily">Claim Daily Reward</button>
-        <div class="small" id="dailyMsg"></div>
-      </div>
-
-      <div class="split">
-        <div>
-          <div class="small">Your Telegram ID</div>
-          <input id="tid" disabled />
-        </div>
-        <div>
-          <div class="small">Withdraw amount (points)</div>
-          <input id="amount" placeholder="e.g. 2000" inputmode="numeric" />
-        </div>
-      </div>
-
-      <div style="height:10px"></div>
-      <div class="row">
-        <button id="btnLoad" class="secondary">Refresh Balance</button>
-        <button id="btnWithdraw">Request Withdrawal</button>
-      </div>
-
-      <div class="small" style="margin-top:10px">
-        Security: this app reads your Telegram ID automatically (no manual ID entry).
-      </div>
-    </div>
-
-    <!-- INFO CARD -->
-    <div class="card">
-      <div class="h"><h2>How to Earn</h2></div>
-      <div class="small">
-        🔥 Claim daily rewards<br/>
-        🎯 Complete tasks<br/>
-        💰 Withdraw when ready<br/><br/>
-        Tip: Active users get more opportunities.
-      </div>
-    </div>
-
-    <!-- HISTORY -->
-    <div class="card" style="grid-column:1/-1">
-      <div class="h">
-        <h2>Withdrawal History</h2>
-        <button id="btnRefresh" class="secondary">Refresh</button>
-      </div>
-      <div id="tableWrap" class="muted">Loading…</div>
-    </div>
-
-  </div>
-
-  <!-- 🔥 BOTTOM BANNER AD -->
-  <div class="banner">
-    <!-- PASTE MONETAG BOTTOM BANNER CODE HERE (300x250 recommended) -->
-  </div>
-
-</div>
-
-<script>
-  const $ = (id) => document.getElementById(id);
-  const setStatus = (t) => $("statusTxt").textContent = t;
-  const msg = (t) => $("msg").textContent = t || "";
-
-  function tgEnv(){
-    try{
-      const tg = window.Telegram?.WebApp;
-      const initData = tg?.initData || "";
-      const uid = tg?.initDataUnsafe?.user?.id;
-      return { tg, initData, telegram_id: uid ? String(uid) : "" };
-    }catch(e){
-      return { tg:null, initData:"", telegram_id:"" };
-    }
-  }
-
-  function isInsideTelegram(){
-    const { initData, telegram_id } = tgEnv();
-    return Boolean(initData && telegram_id);
-  }
-
-  function formatTag(status){
-    const s = String(status || "pending").toLowerCase();
-    const cls = (s === "approved") ? "approved" : (s === "rejected") ? "rejected" : "pending";
-    return `<span class="tag ${cls}">${s}</span>`;
-  }
-
-  // ✅ ALWAYS attach Telegram initData header (server will verify it)
-  async function apiGet(path){
-    const { initData } = tgEnv();
-    const r = await fetch(path, {
-      method: "GET",
-      headers: initData ? { "x-telegram-initdata": initData } : {}
-    });
-    const j = await r.json().catch(()=> ({}));
-    return { ok: r.ok, ...j };
-  }
-
-  async function apiPost(path, body){
-    const { initData } = tgEnv();
-    const r = await fetch(path, {
-      method:"POST",
-      headers: {
-        "Content-Type":"application/json",
-        ...(initData ? { "x-telegram-initdata": initData } : {})
-      },
-      body: JSON.stringify(body || {})
-    });
-    const j = await r.json().catch(()=> ({}));
-    return { ok: r.ok && (j.ok !== false), ...j };
-  }
-
-  // Hooks (lightweight, not fake “numbers”, just encouraging messages)
-  function hookText(points){
-    const p = Number(points || 0);
-    if (p <= 0) return "🚀 Start today — claim your daily bonus now.";
-    if (p < 1000) return "🔥 Nice! Keep going — next reward is close.";
-    if (p < 5000) return "⚡ Momentum! Stay active to unlock more tasks.";
-    if (p < 20000) return "🏆 Strong progress — you’re building consistency.";
-    return "💎 Elite streak — keep it up!";
-  }
-
-  async function loadUser(){
-    const { telegram_id } = tgEnv();
-    if(!telegram_id){ msg("Open from Telegram."); return; }
-
-    setStatus("Loading...");
-    msg("");
-
-    // NOTE:
-    // Your backend /api/me currently uses telegram_id in query.
-    // We keep it for compatibility, but ALSO send x-telegram-initdata header.
-    const data = await apiGet(`/api/me?telegram_id=${encodeURIComponent(telegram_id)}`);
-
-    if(!data.ok){
-      setStatus("Error");
-      msg(data.error || "Error loading user");
-      return;
-    }
-
-    const u = data.user || data.data || data; // safe fallback
-    const points = Number(u.balance || 0);
-
-    $("tid").value = telegram_id;
-    $("balance").textContent = points;
-    $("userLine").textContent = `@${u.username || "no-username"} • tg:${telegram_id}`;
-    $("hookLine").textContent = hookText(points);
-
-    setStatus("Ready");
     await loadWithdrawals();
   }
 
-  async function loadWithdrawals(){
-    const { telegram_id } = tgEnv();
-    if(!telegram_id) return;
+  // Buttons
+  $("btnLogin").onclick = login;
+  $("btnLogout").onclick = () => { clearToken(); showLoggedInUI(false); setLoginMsg("Saved session cleared.", true); };
+  $("btnLoad").onclick = loadUser;
+  $("btnRefresh").onclick = loadWithdrawals;
+  $("btnDaily").onclick = claimDaily;
+  $("btnWithdraw").onclick = requestWithdraw;
 
-    setStatus("Loading withdrawals...");
-    const data = await apiGet(`/api/withdrawals?telegram_id=${encodeURIComponent(telegram_id)}`);
-
-    if(!data.ok){
-      setStatus("Error");
-      $("tableWrap").innerHTML = `<div class="muted">❌ Could not load withdrawals: ${data.error || "unknown"}</div>`;
-      return;
+  // Boot
+  (function(){
+    const token = getToken();
+    if(token){
+      showLoggedInUI(true);
+      loadAll();
+    }else{
+      showLoggedInUI(false);
+      setStatus("Login required");
     }
-
-    const rows = data.withdrawals || [];
-    if(!rows.length){
-      $("tableWrap").innerHTML = `<div class="muted">No withdrawals yet.</div>`;
-      setStatus("Ready");
-      return;
-    }
-
-    const html = `
-      <div class="tableScroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>Amount</th>
-              <th>Created</th>
-              <th>Processed</th>
-              <th>ID</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(r => `
-              <tr>
-                <td>${formatTag(r.status)}</td>
-                <td>${Number(r.amount || 0)}</td>
-                <td>${r.created_at ? new Date(r.created_at).toLocaleString() : "-"}</td>
-                <td>${r.processed_at ? new Date(r.processed_at).toLocaleString() : "-"}</td>
-                <td class="mono"><code class="idcode">${String(r.id || "")}</code></td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-    $("tableWrap").innerHTML = html;
-    setStatus("Ready");
-  }
-
-  async function claimDaily(){
-    const { telegram_id } = tgEnv();
-    if(!telegram_id){
-      $("dailyMsg").textContent = "Open from Telegram.";
-      return;
-    }
-
-    $("dailyMsg").textContent = "Processing...";
-    const data = await apiPost("/api/daily", { telegram_id });
-
-    if(!data.ok){
-      $("dailyMsg").textContent = "❌ " + (data.error || "Daily failed.");
-      return;
-    }
-
-    const reward = data.reward ?? 0;
-    $("dailyMsg").textContent = `✅ +${reward} points added!`;
-    await loadUser();
-  }
-
-  async function requestWithdraw(){
-    const { telegram_id } = tgEnv();
-    const amount = Number(($("amount").value || "").trim());
-
-    if(!telegram_id){ msg("Open from Telegram."); return; }
-    if(!Number.isFinite(amount) || amount <= 0){ msg("Enter a valid amount."); return; }
-
-    setStatus("Creating withdrawal...");
-    msg("");
-
-    const data = await apiPost("/api/withdraw", { telegram_id, amount });
-
-    if(!data.ok){
-      setStatus("Error");
-      msg(data.error || "Withdrawal failed");
-      return;
-    }
-
-    msg("✅ Withdrawal requested successfully.");
-    $("amount").value = "";
-    await loadUser();
-  }
-
-  // ====== BOOT ======
-  (function boot(){
-    if(!isInsideTelegram()){
-      $("gate").style.display = "flex";
-      $("app").style.display = "none";
-      return;
-    }
-
-    const { tg, telegram_id } = tgEnv();
-    try{
-      // Better Telegram UX: expand + ready signal
-      tg?.expand?.();
-      tg?.ready?.();
-    }catch(e){}
-
-    $("gate").style.display = "none";
-    $("app").style.display = "block";
-    $("tid").value = telegram_id;
-
-    $("btnLoad").onclick = loadUser;
-    $("btnWithdraw").onclick = requestWithdraw;
-    $("btnRefresh").onclick = loadWithdrawals;
-    $("btnDaily").onclick = claimDaily;
-
-    loadUser();
   })();
 </script>
 
