@@ -323,7 +323,7 @@
   }
 
   async function requestWithdraw(){
-    const amount = Number((${w.amount_points} pts (${w.amount_usdt} USDT).value || "").trim());
+    const amount = Number((${w.amount_points}.trim());
     if(!Number.isFinite(amount) || amount <= 0){
       msg("Enter a valid amount.");
       return;
@@ -341,7 +341,7 @@
     }
 
     msg("✅ Withdrawal requested successfully.");
-    ${w.amount_points} pts (${w.amount_usdt} USDT).value = "";
+    ${w.amount_points}.value = "";
     await loadAll();
   }
 
