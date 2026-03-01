@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from("withdrawals")
-      .select("id, amount, status, created_at, processed_at")
+      .select("id, amount, amount_usdt, status, created_at, processed_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);
