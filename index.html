@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Earn Bot</title>
 
+ <script src='//libtl.com/sdk.js' data-zone='10593833' data-sdk='show_10593833'></script>
+  
   <style>
     :root{
       --bg:#0b1020; --card:#121a33; --muted:#9fb0ff; --text:#e8ecff;
@@ -64,6 +66,44 @@
     }
 
     .banner{margin:14px 0;text-align:center}
+
+    /* App tabs */
+    .apptabs{
+      display:flex;gap:8px;flex-wrap:wrap;
+      margin:10px 0 12px 0;
+      padding:10px;
+      border:1px solid rgba(34,48,98,.45);
+      border-radius:12px;
+      background:rgba(10,16,38,.55);
+    }
+    .apptab{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(34,48,98,.6);
+      background:rgba(18,26,51,.6);
+      color:var(--muted);
+      font-weight:900;
+      font-size:13px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .apptab.active{
+      color:var(--text);
+      background:linear-gradient(135deg, rgba(76,111,255,.25), rgba(57,217,138,.12));
+      border-color:rgba(76,111,255,.55);
+    }
+    .apppanel{display:none}
+    .apppanel.active{display:block}
+    .miniStatus{
+      margin-top:8px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(34,48,98,.55);
+      background:rgba(10,16,38,.55);
+      font-size:13px;
+      color:var(--muted);
+      white-space:pre-wrap;
+    }
   </style>
 </head>
 
@@ -76,7 +116,7 @@
 
   <!-- TOP BANNER AD (optional) -->
   <div class="banner">
-    <!-- PASTE AD CODE HERE (Top) -->
+    <!-- PASTE BANNER AD CODE HERE (Top) -->
   </div>
 
   <div class="grid">
@@ -114,30 +154,69 @@
       <div class="hook" id="hookLine">🚀 Keep going — daily bonus is waiting.</div>
       <div class="msg" id="msg"></div>
 
-      <div style="height:12px"></div>
-
-      <!-- DAILY BONUS -->
-      <div class="card" style="background:#0f1838;margin-bottom:12px">
-        <div class="h"><h2>Daily Bonus</h2></div>
-        <button class="green" id="btnDaily">Claim Daily Reward</button>
-        <div class="small" id="dailyMsg"></div>
+      <!-- Tabs inside app -->
+      <div class="apptabs" style="margin-top:14px">
+        <div class="apptab active" data-tab="panel-home">Home</div>
+        <div class="apptab" data-tab="panel-watch">Watch & Earn</div>
+        <div class="apptab" data-tab="panel-history">Withdrawals</div>
       </div>
 
-      <div class="split">
-        <div>
-          <div class="small">Withdraw amount (points)</div>
-          <input id="amount_points" placeholder="e.g. 100000" inputmode="numeric" />
+      <!-- HOME PANEL -->
+      <div class="apppanel active" id="panel-home">
+        <div style="height:12px"></div>
+
+        <!-- DAILY BONUS -->
+        <div class="card" style="background:#0f1838;margin-bottom:12px">
+          <div class="h"><h2>Daily Bonus</h2></div>
+          <button class="green" id="btnDaily">Claim Daily Reward</button>
+          <div class="small" id="dailyMsg"></div>
         </div>
-        <div>
-          <div class="small">Action</div>
-          <button id="btnWithdraw">Request Withdrawal</button>
+
+        <div class="split">
+          <div>
+            <div class="small">Withdraw amount (points)</div>
+            <input id="amount_points" placeholder="e.g. 100000" inputmode="numeric" />
+          </div>
+          <div>
+            <div class="small">Action</div>
+            <button id="btnWithdraw">Request Withdrawal</button>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+        <div class="row">
+          <button id="btnRefreshUser" class="secondary">Refresh Balance</button>
+          <button id="btnLogout" class="secondary">Logout</button>
         </div>
       </div>
 
-      <div style="height:10px"></div>
-      <div class="row">
-        <button id="btnRefreshUser" class="secondary">Refresh Balance</button>
-        <button id="btnLogout" class="secondary">Logout</button>
+      <!-- WATCH & EARN PANEL -->
+      <div class="apppanel" id="panel-watch">
+        <div class="small">
+          Test Monetag formats here. If buttons show “SDK not loaded”, paste the Monetag SDK tag in the &lt;head&gt;.
+        </div>
+
+        <div style="height:10px"></div>
+        <div class="row">
+          <button id="btnAdRewarded">Rewarded Interstitial</button>
+          <button id="btnAdPopup" class="secondary">Rewarded Popup</button>
+          <button id="btnAdInApp" class="secondary">In-app Interstitial</button>
+        </div>
+
+        <div class="miniStatus" id="adStatus">Ad status: idle</div>
+
+        <div class="small" style="margin-top:10px">
+          Note: This only tests opening ads. Your “reward points” logic should run only after <b>then()</b> success.
+        </div>
+      </div>
+
+      <!-- HISTORY PANEL -->
+      <div class="apppanel" id="panel-history">
+        <div class="h" style="margin-top:6px">
+          <h2>Withdrawal History</h2>
+          <button id="btnRefreshHistory" class="secondary">Refresh</button>
+        </div>
+        <div id="tableWrap" class="muted">Loading…</div>
       </div>
     </div>
 
@@ -151,20 +230,11 @@
         Tip: Active users get more opportunities.
       </div>
     </div>
-
-    <!-- HISTORY -->
-    <div class="card" style="grid-column:1/-1">
-      <div class="h">
-        <h2>Withdrawal History</h2>
-        <button id="btnRefreshHistory" class="secondary">Refresh</button>
-      </div>
-      <div id="tableWrap" class="muted">Login to load data.</div>
-    </div>
   </div>
 
   <!-- BOTTOM BANNER AD (optional) -->
   <div class="banner">
-    <!-- PASTE AD CODE HERE (Bottom) -->
+    <!-- PASTE BANNER AD CODE HERE (Bottom) -->
   </div>
 </div>
 
@@ -253,7 +323,7 @@
     showLoggedInUI(false);
     setStatus("Login required");
     setLoginMsg(note || "Session cleared.", true);
-    $("tableWrap").innerHTML = `<div class="muted">Login to load data.</div>`;
+    if ($("tableWrap")) $("tableWrap").innerHTML = `<div class="muted">Login to load data.</div>`;
     msg("");
   }
 
@@ -262,11 +332,9 @@
     setStatus("Loading...");
     msg("");
 
-    // IMPORTANT: this /api/me must be the secure version that reads x-session-token
     const data = await apiGet("/api/me");
 
     if(!data.http_ok || data.ok === false || !data.user){
-      // token invalid/expired -> back to login
       forceLogout("Session expired. Please login again with OTP.");
       return;
     }
@@ -355,13 +423,11 @@
     setStatus("Creating withdrawal...");
     msg("");
 
-    // Use your points-based endpoint if you have it:
-    // /api/request-withdrawal expects: amount_points + address etc.
-    // If you are still using /api/withdraw (simple), replace this call.
+    // Uses your points endpoint:
     const data = await apiPost("/api/request-withdrawal", {
       amount_points,
-      // address is required in your request-withdrawal.js.
-      // Put a placeholder if you are not using address yet:
+      // Your api/request-withdrawal.js requires address.
+      // Replace with a real input later if you want, but for now keep it simple:
       address: "TRC20_ADDRESS_HERE"
     });
 
@@ -382,6 +448,90 @@
     setStatus("Ready");
   }
 
+  // ====== WATCH & EARN (MONETAG) ======
+  function adFn(){
+    return (typeof window.show_10593833 === "function") ? window.show_10593833 : null;
+  }
+
+  function setAdStatus(t){
+    $("adStatus").textContent = "Ad status: " + (t || "idle");
+  }
+
+  async function runRewardedInterstitial(){
+    const show = adFn();
+    if(!show){ setAdStatus("SDK not loaded (show_10593833 is undefined). Paste Monetag SDK tag in <head>."); return; }
+
+    setAdStatus("Opening Rewarded Interstitial…");
+    $("btnAdRewarded").disabled = true;
+
+    try{
+      await show(); // Rewarded interstitial
+      setAdStatus("✅ Completed Rewarded Interstitial (then() fired).");
+      // ✅ Put your “reward points” API call here later, if you want.
+    }catch(e){
+      setAdStatus("❌ Error opening Rewarded Interstitial: " + (e?.message || String(e)));
+    }finally{
+      $("btnAdRewarded").disabled = false;
+    }
+  }
+
+  async function runRewardedPopup(){
+    const show = adFn();
+    if(!show){ setAdStatus("SDK not loaded (show_10593833 is undefined). Paste Monetag SDK tag in <head>."); return; }
+
+    setAdStatus("Opening Rewarded Popup…");
+    $("btnAdPopup").disabled = true;
+
+    try{
+      await show("pop"); // Rewarded popup
+      setAdStatus("✅ Completed Rewarded Popup (then() fired).");
+      // ✅ Put your “reward points” API call here later, if you want.
+    }catch(e){
+      // Monetag docs: user can close / error during playing ad -> catch
+      setAdStatus("⚠️ Popup closed or error: " + (e?.message || String(e)));
+    }finally{
+      $("btnAdPopup").disabled = false;
+    }
+  }
+
+  async function runInAppInterstitial(){
+    const show = adFn();
+    if(!show){ setAdStatus("SDK not loaded (show_10593833 is undefined). Paste Monetag SDK tag in <head>."); return; }
+
+    setAdStatus("Starting In-app Interstitial schedule…");
+    $("btnAdInApp").disabled = true;
+
+    try{
+      await show({
+        type: "inApp",
+        inAppSettings: {
+          frequency: 2,
+          capping: 0.1,
+          interval: 30,
+          timeout: 5,
+          everyPage: false
+        }
+      });
+      setAdStatus("✅ In-app schedule started (ads will appear automatically by your settings).");
+    }catch(e){
+      setAdStatus("❌ Error starting In-app: " + (e?.message || String(e)));
+    }finally{
+      // keep disabled for a short time to prevent spam taps
+      setTimeout(()=> { $("btnAdInApp").disabled = false; }, 2500);
+    }
+  }
+
+  // ====== APP TABS ======
+  function setActiveTab(tabId){
+    document.querySelectorAll(".apptab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".apppanel").forEach(p => p.classList.remove("active"));
+
+    const tabBtn = document.querySelector(`.apptab[data-tab="${tabId}"]`);
+    const panel = document.getElementById(tabId);
+    if(tabBtn) tabBtn.classList.add("active");
+    if(panel) panel.classList.add("active");
+  }
+
   // ====== BUTTONS ======
   $("btnLogin").onclick = login;
   $("btnClear").onclick = () => forceLogout("Saved session cleared. OTP required.");
@@ -390,6 +540,16 @@
   $("btnWithdraw").onclick = requestWithdrawal;
   $("btnRefreshUser").onclick = loadUser;
   $("btnRefreshHistory").onclick = loadWithdrawals;
+
+  // Ad buttons
+  $("btnAdRewarded").onclick = runRewardedInterstitial;
+  $("btnAdPopup").onclick = runRewardedPopup;
+  $("btnAdInApp").onclick = runInAppInterstitial;
+
+  // Tabs click
+  document.querySelectorAll(".apptab").forEach(t => {
+    t.onclick = () => setActiveTab(t.getAttribute("data-tab"));
+  });
 
   // ====== BOOT ======
   (function boot(){
@@ -401,6 +561,7 @@
       showLoggedInUI(false);
       setStatus("Login required");
     }
+    setAdStatus("idle");
   })();
 </script>
 
