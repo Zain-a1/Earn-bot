@@ -15,34 +15,41 @@
     body{margin:0;background:linear-gradient(180deg,#070b18, var(--bg));color:var(--text);}
     .wrap{max-width:920px;margin:0 auto;padding:18px;}
     .top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
-    .brand{font-weight:800;letter-spacing:.3px;font-size:18px}
+    .brand{font-weight:900;letter-spacing:.3px;font-size:18px}
     .pill{padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
+
     .grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px;margin-top:14px}
     @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
     .card{background:rgba(18,26,51,.85);border:1px solid var(--line);border-radius:14px;padding:14px}
     .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-    .h h2{margin:0;font-size:14px;color:var(--muted);font-weight:700}
-    .big{font-size:34px;font-weight:900;letter-spacing:.2px}
+    .h h2{margin:0;font-size:14px;color:var(--muted);font-weight:800}
+    .big{font-size:34px;font-weight:950;letter-spacing:.2px}
     .row{display:flex;gap:10px;flex-wrap:wrap}
+
     input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0a1026;color:var(--text)}
-    button{padding:12px 14px;border:0;border-radius:10px;background:var(--btn);color:white;font-weight:800;cursor:pointer}
+    button{padding:12px 14px;border:0;border-radius:10px;background:var(--btn);color:white;font-weight:900;cursor:pointer}
     button.secondary{background:var(--btn2);border:1px solid var(--line)}
-    button.green{background:var(--good);color:#000}
+    button.green{background:var(--good);color:#05120b}
     button:disabled{opacity:.6;cursor:not-allowed}
+
     .msg{margin-top:10px;font-size:13px;color:var(--muted);white-space:pre-wrap}
+    .muted{color:var(--muted)}
+    .small{font-size:12px;color:var(--muted)}
+    .hook{font-size:13px;color:var(--good);margin-top:6px}
+
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:600px){.split{grid-template-columns:1fr}}
+
     table{width:100%;border-collapse:collapse;font-size:13px}
     th,td{padding:10px;border-bottom:1px solid rgba(34,48,98,.6);text-align:left;vertical-align:top}
-    th{color:var(--muted);font-weight:800;font-size:12px}
-    .tag{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800}
+    th{color:var(--muted);font-weight:900;font-size:12px}
+
+    .tag{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:900}
     .pending{background:rgba(255,209,102,.15);color:var(--warn);border:1px solid rgba(255,209,102,.25)}
     .approved{background:rgba(57,217,138,.15);color:var(--good);border:1px solid rgba(57,217,138,.25)}
     .rejected{background:rgba(255,92,122,.15);color:var(--bad);border:1px solid rgba(255,92,122,.25)}
-    .muted{color:var(--muted)}
-    .small{font-size:12px;color:var(--muted)}
-    .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media (max-width:600px){.split{grid-template-columns:1fr}}
-    .banner{margin:15px 0;text-align:center}
-    .hook{font-size:13px;color:var(--good);margin-top:6px}
+
     .tableScroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid rgba(34,48,98,.45);border-radius:12px}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
     code.idcode{
@@ -55,47 +62,48 @@
       background:#0a1026;
       color:var(--text);
     }
+
+    .banner{margin:14px 0;text-align:center}
   </style>
 </head>
 
 <body>
 <div class="wrap">
-
   <div class="top">
     <div class="brand">Earn Bot</div>
     <div class="pill">Status: <span id="statusTxt">Idle</span></div>
   </div>
 
-  <!-- TOP BANNER AD -->
+  <!-- TOP BANNER AD (optional) -->
   <div class="banner">
-    <!-- PASTE MONETAG TOP BANNER CODE HERE -->
+    <!-- PASTE AD CODE HERE (Top) -->
   </div>
 
   <div class="grid">
-
-    <!-- LOGIN CARD -->
+    <!-- LOGIN -->
     <div class="card" id="loginCard">
       <div class="h">
         <h2>Login</h2>
-        <span class="small">Use the code from Telegram bot</span>
+        <span class="small">Get OTP from the bot</span>
       </div>
 
-      <div class="small">Login Code</div>
+      <div class="small">Login Code (OTP)</div>
       <input id="code" placeholder="e.g. 6F8A2B" autocomplete="one-time-code" />
 
       <div style="height:10px"></div>
       <div class="row">
         <button id="btnLogin" class="green">Login</button>
-        <button id="btnLogout" class="secondary">Clear Saved</button>
+        <button id="btnClear" class="secondary">Clear Saved</button>
       </div>
 
       <div class="msg" id="loginMsg"></div>
+
       <div class="small" style="margin-top:10px">
-        After login, your session is saved on this device.
+        If you already logged in once on this phone, it may auto-login. Use “Clear Saved” to force OTP again.
       </div>
     </div>
 
-    <!-- MAIN APP CARD -->
+    <!-- APP -->
     <div class="card" id="appCard" style="display:none">
       <div class="h">
         <h2>Your Balance</h2>
@@ -118,7 +126,7 @@
       <div class="split">
         <div>
           <div class="small">Withdraw amount (points)</div>
-          <input id="amount" placeholder="e.g. 2000" inputmode="numeric" />
+          <input id="amount_points" placeholder="e.g. 100000" inputmode="numeric" />
         </div>
         <div>
           <div class="small">Action</div>
@@ -128,18 +136,18 @@
 
       <div style="height:10px"></div>
       <div class="row">
-        <button id="btnLoad" class="secondary">Refresh Balance</button>
-        <button id="btnRefresh" class="secondary">Refresh History</button>
+        <button id="btnRefreshUser" class="secondary">Refresh Balance</button>
+        <button id="btnLogout" class="secondary">Logout</button>
       </div>
     </div>
 
-    <!-- INFO CARD -->
+    <!-- INFO -->
     <div class="card">
       <div class="h"><h2>How to Earn</h2></div>
       <div class="small">
         🔥 Claim daily rewards<br/>
         🎯 Complete tasks<br/>
-        💰 Withdraw when ready<br/><br/>
+        💰 Withdraw in points<br/><br/>
         Tip: Active users get more opportunities.
       </div>
     </div>
@@ -148,17 +156,16 @@
     <div class="card" style="grid-column:1/-1">
       <div class="h">
         <h2>Withdrawal History</h2>
+        <button id="btnRefreshHistory" class="secondary">Refresh</button>
       </div>
       <div id="tableWrap" class="muted">Login to load data.</div>
     </div>
-
   </div>
 
-  <!-- BOTTOM BANNER AD -->
+  <!-- BOTTOM BANNER AD (optional) -->
   <div class="banner">
-    <!-- PASTE MONETAG BOTTOM BANNER CODE HERE -->
+    <!-- PASTE AD CODE HERE (Bottom) -->
   </div>
-
 </div>
 
 <script>
@@ -172,19 +179,15 @@
   }
   function msg(t){ $("msg").textContent = t || ""; }
 
-  function getToken(){
-    return localStorage.getItem("SESSION_TOKEN") || "";
-  }
-  function setToken(t){
-    localStorage.setItem("SESSION_TOKEN", t);
-  }
-  function clearToken(){
-    localStorage.removeItem("SESSION_TOKEN");
-  }
+  // ====== SESSION TOKEN STORAGE ======
+  const TOKEN_KEY = "SESSION_TOKEN";
+  function getToken(){ return localStorage.getItem(TOKEN_KEY) || ""; }
+  function setToken(t){ localStorage.setItem(TOKEN_KEY, t); }
+  function clearToken(){ localStorage.removeItem(TOKEN_KEY); }
 
-  function showLoggedInUI(loggedIn){
-    $("loginCard").style.display = loggedIn ? "none" : "block";
-    $("appCard").style.display = loggedIn ? "block" : "none";
+  function showLoggedInUI(isIn){
+    $("loginCard").style.display = isIn ? "none" : "block";
+    $("appCard").style.display = isIn ? "block" : "none";
   }
 
   function hookText(points){
@@ -192,10 +195,12 @@
     if (p <= 0) return "🚀 Start today — claim your daily bonus now.";
     if (p < 1000) return "🔥 Nice! Keep going — next reward is close.";
     if (p < 5000) return "⚡ Momentum! Stay active to unlock more tasks.";
-    if (p < 20000) return "🏆 Strong progress — you’re building consistency.";
-    return "💎 Elite streak — keep it up!";
+    if (p < 20000) return "🏆 Strong progress — keep it up.";
+    if (p < 100000) return "💎 Big numbers — you’re close to withdrawal.";
+    return "🏅 One lakh+ club — don’t stop now!";
   }
 
+  // ====== API HELPERS (TOKEN HEADER) ======
   async function apiGet(path){
     const token = getToken();
     const r = await fetch(path, {
@@ -220,16 +225,17 @@
     return { http_ok: r.ok, ...j };
   }
 
+  // ====== LOGIN (OTP) ======
   async function login(){
     setLoginMsg("");
     const code = $("code").value.trim();
-    if(!code) return setLoginMsg("Enter your login code.");
+    if(!code) return setLoginMsg("Enter your OTP code from the bot.");
 
     setStatus("Logging in...");
     const data = await apiPost("/api/login", { code });
 
-    if(!data.http_ok || data.ok === false){
-      setStatus("Error");
+    if(!data.http_ok || data.ok === false || !data.session_token){
+      setStatus("Login failed");
       return setLoginMsg("❌ " + (data.error || "Login failed"));
     }
 
@@ -237,24 +243,38 @@
     $("code").value = "";
     setStatus("Logged in");
     setLoginMsg("✅ Logged in!", true);
+
     showLoggedInUI(true);
     await loadAll();
   }
 
+  function forceLogout(note){
+    clearToken();
+    showLoggedInUI(false);
+    setStatus("Login required");
+    setLoginMsg(note || "Session cleared.", true);
+    $("tableWrap").innerHTML = `<div class="muted">Login to load data.</div>`;
+    msg("");
+  }
+
+  // ====== LOAD USER ======
   async function loadUser(){
     setStatus("Loading...");
     msg("");
 
+    // IMPORTANT: this /api/me must be the secure version that reads x-session-token
     const data = await apiGet("/api/me");
-    if(!data.http_ok || data.ok === false){
-      setStatus("Login required");
-      showLoggedInUI(false);
+
+    if(!data.http_ok || data.ok === false || !data.user){
+      // token invalid/expired -> back to login
+      forceLogout("Session expired. Please login again with OTP.");
       return;
     }
 
     const u = data.user;
     const points = Number(u.balance || 0);
-    $("balance").textContent = points;
+
+    $("balance").textContent = points.toLocaleString();
     $("userLine").textContent = `@${u.username || "no-username"} • tg:${u.telegram_id}`;
     $("hookLine").textContent = hookText(points);
 
@@ -267,6 +287,7 @@
     return `<span class="tag ${cls}">${s}</span>`;
   }
 
+  // ====== LOAD WITHDRAWALS ======
   async function loadWithdrawals(){
     const data = await apiGet("/api/withdrawals");
 
@@ -287,7 +308,7 @@
           <thead>
             <tr>
               <th>Status</th>
-              <th>Amount</th>
+              <th>Points</th>
               <th>Created</th>
               <th>Processed</th>
               <th>ID</th>
@@ -297,7 +318,7 @@
             ${rows.map(r => `
               <tr>
                 <td>${formatTag(r.status)}</td>
-                <td>${Number(r.amount || 0)}</td>
+                <td>${Number(r.amount_points ?? r.amount ?? 0).toLocaleString()}</td>
                 <td>${r.created_at ? new Date(r.created_at).toLocaleString() : "-"}</td>
                 <td>${r.processed_at ? new Date(r.processed_at).toLocaleString() : "-"}</td>
                 <td class="mono"><code class="idcode">${String(r.id || "")}</code></td>
@@ -309,6 +330,7 @@
     `;
   }
 
+  // ====== DAILY ======
   async function claimDaily(){
     $("dailyMsg").textContent = "Processing...";
     const data = await apiPost("/api/daily", {});
@@ -318,21 +340,30 @@
       return;
     }
 
-    $("dailyMsg").textContent = `✅ +${data.reward ?? 0} points added!`;
+    $("dailyMsg").textContent = `✅ +${Number(data.reward || 0).toLocaleString()} points added!`;
     await loadAll();
   }
 
-  async function requestWithdraw(){
-    const amount = Number(($("amount").value || "").trim());
-    if(!Number.isFinite(amount) || amount <= 0){
-      msg("Enter a valid amount.");
+  // ====== WITHDRAW REQUEST (POINTS ONLY) ======
+  async function requestWithdrawal(){
+    const amount_points = Number(($("amount_points").value || "").trim());
+    if(!Number.isFinite(amount_points) || amount_points <= 0){
+      msg("Enter a valid points amount.");
       return;
     }
 
     setStatus("Creating withdrawal...");
     msg("");
 
-    const data = await apiPost("/api/withdraw", { amount });
+    // Use your points-based endpoint if you have it:
+    // /api/request-withdrawal expects: amount_points + address etc.
+    // If you are still using /api/withdraw (simple), replace this call.
+    const data = await apiPost("/api/request-withdrawal", {
+      amount_points,
+      // address is required in your request-withdrawal.js.
+      // Put a placeholder if you are not using address yet:
+      address: "TRC20_ADDRESS_HERE"
+    });
 
     if(!data.http_ok || data.ok === false){
       setStatus("Error");
@@ -341,25 +372,27 @@
     }
 
     msg("✅ Withdrawal requested successfully.");
-    $("amount").value = "";
+    $("amount_points").value = "";
     await loadAll();
   }
 
   async function loadAll(){
     await loadUser();
     await loadWithdrawals();
+    setStatus("Ready");
   }
 
-  // Buttons
+  // ====== BUTTONS ======
   $("btnLogin").onclick = login;
-  $("btnLogout").onclick = () => { clearToken(); showLoggedInUI(false); setLoginMsg("Saved session cleared.", true); };
-  $("btnLoad").onclick = loadUser;
-  $("btnRefresh").onclick = loadWithdrawals;
+  $("btnClear").onclick = () => forceLogout("Saved session cleared. OTP required.");
+  $("btnLogout").onclick = () => forceLogout("Logged out. OTP required.");
   $("btnDaily").onclick = claimDaily;
-  $("btnWithdraw").onclick = requestWithdraw;
+  $("btnWithdraw").onclick = requestWithdrawal;
+  $("btnRefreshUser").onclick = loadUser;
+  $("btnRefreshHistory").onclick = loadWithdrawals;
 
-  // Boot
-  (function(){
+  // ====== BOOT ======
+  (function boot(){
     const token = getToken();
     if(token){
       showLoggedInUI(true);
